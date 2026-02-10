@@ -144,7 +144,6 @@
 	</style>
   <link rel="dns-prefetch" href="//api.poki.com">
   <link rel="dns-prefetch" href="//a.poki-cdn.com">
-  <script defer src="//game-cdn.poki.com/scripts/v2/poki-sdk.js" onload="poki_sdk_loaded()"></script>
   <script type="text/javascript" src="GameAnalytics.js"></script>
  </head>
  <body>
@@ -353,6 +352,74 @@
 					runFunc();
 				});
 		}
+/**
+ * Mock Poki SDK Bypass
+ * Replaces the original SDK with empty functions to prevent crashes
+ * and allow the game to run independently.
+ */
+
+window.PokiSDK = {
+    // Core initialization
+    init: function() {
+        console.log("Mock SDK: init called");
+        return new Promise((resolve) => {
+            resolve(); // Immediately resolve to bypass initialization waits
+        });
+    },
+
+    // Loading Progress
+    gameLoadingStart: function() {
+        console.log("Mock SDK: gameLoadingStart");
+    },
+    gameLoadingProgress: function(data) {
+        // data.percentageDone
+    },
+    gameLoadingFinished: function() {
+        console.log("Mock SDK: gameLoadingFinished");
+    },
+
+    // Gameplay lifecycle
+    gameplayStart: function() {
+        console.log("Mock SDK: gameplayStart");
+    },
+    gameplayStop: function() {
+        console.log("Mock SDK: gameplayStop");
+    },
+
+    // Ads and Commercials
+    commercialBreak: function() {
+        console.log("Mock SDK: Ad break skipped");
+        return new Promise((resolve) => {
+            resolve(); // Immediately return to the game
+        });
+    },
+    rewardedBreak: function() {
+        console.log("Mock SDK: Rewarded ad skipped (Reward granted)");
+        return new Promise((resolve) => {
+            resolve(true); // Pretend the user watched the ad
+        });
+    },
+
+    // Misc
+    happyTime: function(scale) {
+        // Usually for firework effects or celebration
+    },
+    setDebug: function(val) {
+        // No-op
+    }
+};
+
+// Also mock the 'ig.poki' or 'window.poki' if your wrapper expects it
+// This prevents the 'Adblock enabled' console logs in your specific code.
+window.poki = {
+    isSdkReady: true,
+    isAdShown: false,
+    isAdCoolingDown: false,
+    showAd: function(callback) { if(callback) callback(); },
+    happyTime: function() {},
+    startGameplay: function() {},
+    stopGameplay: function() {}
+};
 	</script>
  </body>
 </html>
